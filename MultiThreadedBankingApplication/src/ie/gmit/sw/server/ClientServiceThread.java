@@ -17,7 +17,8 @@ public class ClientServiceThread extends Thread {
 	private boolean running = true;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
-
+	
+	// Constructors
 	public ClientServiceThread(Socket socket, int id) {
 		clientSocket = socket;
 		clientID = id;
@@ -36,14 +37,17 @@ public class ClientServiceThread extends Thread {
 			in = new ObjectInputStream(clientSocket.getInputStream());
 			System.out.println("Accepted Client : ID - " + clientID + " : Address - "
 					+ clientSocket.getInetAddress().getHostName());
-
-			sendMessage("Connection successful");
 			
 			do {
 				try {
-					System.out.println("client>" + clientID + "  " + message); 
-					sendMessage("server got the following: " + message);
 					message = (String)in.readObject();
+					System.out.println("Client " + clientID + "> " + message);
+					
+					switch(message) {
+					case "Register":
+						register();
+						break;
+					}
 				}
 				catch(ClassNotFoundException classnot){
 					System.err.println("Data received in unknown format");
@@ -57,11 +61,33 @@ public class ClientServiceThread extends Thread {
 		}
 	}
 	
+	private void register() {
+		try {
+			sendMessage("Enter name");
+			message = (String)in.readObject();
+			
+			sendMessage("Enter address");
+			message = (String)in.readObject();
+			
+			sendMessage("Enter account no.");
+			message = (String)in.readObject();
+			
+			sendMessage("Enter username");
+			message = (String)in.readObject();
+			
+			sendMessage("Enter password");
+			message = (String)in.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void sendMessage(String msg) {
 		try{
 			out.writeObject(msg);
 			out.flush();
-			System.out.println("client> " + msg);
 		}
 		catch(IOException ioException){
 			ioException.printStackTrace();
