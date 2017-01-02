@@ -74,7 +74,7 @@ public class Client{
 			// Enter account no.
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.next();
+			message = ((Integer)stdin.nextInt()).toString();
 			sendMessage(message);
 			
 			// Enter username
@@ -88,11 +88,58 @@ public class Client{
 			System.out.println(message);
 			message = stdin.next();
 			sendMessage(message);
+			
+			// Print response from server
+			message = (String)in.readObject();
+			System.out.println(message);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// Sequence for logging in to an existing account
+	// Return true if the user successfully logged in
+	public boolean login() {
+		boolean isSuccessful = false;
+		
+		try {
+			// Initialise request sequence
+			sendMessage("Login");
+			
+			// Enter account no.
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = ((Integer)stdin.nextInt()).toString();
+			sendMessage(message);
+			
+			// Enter username
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = stdin.next();
+			sendMessage(message);
+			
+			// Enter password
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = stdin.next();
+			sendMessage(message);
+			
+			// Print response from server
+			message = (String)in.readObject();
+			System.out.println(message);
+			
+			if (message.equals("Successfully logged in!")) {
+				isSuccessful = true;
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return isSuccessful;
 	}
 	
 	// Send a message to the server

@@ -37,6 +37,9 @@ public class UI {
 				break;
 			case 2:
 				// Login
+				if (client.login()) {
+					submenu();
+				}
 				break;
 			}
 		} while(option != 3);

@@ -7,14 +7,16 @@ package ie.gmit.sw.server;
 
 public class User {
 	private String name;
+	private String address;
 	private Account account;
 	private String username;
 	private String password;
 	
 	// Constructors
-	public User(String name, int accountNumber, String username, String password) {
+	public User(String name, String address, int accountNumber, String username, String password) {
 		super();
 		this.name = name;
+		this.address = address;
 		this.account = new Account(accountNumber);
 		this.username = username;
 		this.password = password;
@@ -29,6 +31,14 @@ public class User {
 		this.name = name;
 	}
 	
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
 	public Account getAccount() {
 		return account;
 	}

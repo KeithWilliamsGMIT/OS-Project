@@ -17,11 +17,13 @@ public class ClientServiceThread extends Thread {
 	private boolean running = true;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
+	private UserManager userManager;
 	
 	// Constructors
-	public ClientServiceThread(Socket socket, int id) {
-		clientSocket = socket;
-		clientID = id;
+	public ClientServiceThread(Socket socket, int id, UserManager userManager) {
+		this.clientSocket = socket;
+		this.clientID = id;
+		this.userManager = userManager;
 	}
 
 	/**
@@ -43,9 +45,13 @@ public class ClientServiceThread extends Thread {
 					message = (String)in.readObject();
 					System.out.println("Client " + clientID + "> " + message);
 					
+					// Determine what sequence to start
 					switch(message) {
 					case "Register":
 						register();
+						break;
+					case "Login":
+						login();
 						break;
 					}
 				}
@@ -63,20 +69,74 @@ public class ClientServiceThread extends Thread {
 	
 	private void register() {
 		try {
+			String name, address, username, password;
+			int accountNumber;
+			
+			// Get name from client
 			sendMessage("Enter name");
-			message = (String)in.readObject();
+			name = (String)in.readObject();
 			
+			// Get address from client
 			sendMessage("Enter address");
-			message = (String)in.readObject();
+			address = (String)in.readObject();
 			
+			// Get account number from client
 			sendMessage("Enter account no.");
-			message = (String)in.readObject();
+			accountNumber = Integer.parseInt((String) in.readObject());
 			
+			// Get username from client
 			sendMessage("Enter username");
-			message = (String)in.readObject();
+			username = (String)in.readObject();
 			
+			// Get password from client
 			sendMessage("Enter password");
-			message = (String)in.readObject();
+			password = (String)in.readObject();
+			
+			User user = new User(name, address, accountNumber, username, password);
+			
+			// Check if the user is already registered
+			if (userManager.isUserRegistered(user)) {
+				// If this user is registered send an error message to the client
+				sendMessage("ERROR: A user with the given account number is already registered!");
+			} else {
+				// If the user is not registered, register the new user and send a success message to the client
+				userManager.registerUser(user);
+				sendMessage("Successfully registered!");
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void login() {
+		try {
+			String username, password;
+			int accountNumber;
+			
+			// Get account number from client
+			sendMessage("Enter account no.");
+			accountNumber = Integer.parseInt((String) in.readObject());
+			
+			// Get username from client
+			sendMessage("Enter username");
+			username = (String)in.readObject();
+			
+			// Get password from client
+			sendMessage("Enter password");
+			password = (String)in.readObject();
+			
+			User user = new User("", "", accountNumber, username, password);
+			
+			// Check if the user logged in successfully
+			if (userManager.loginUser(user)) {
+				// If the login is successful send a success message to the client
+				sendMessage("Successfully logged in!");
+			} else {
+				// If the login is unsuccessful send an error message to the client
+				sendMessage("ERROR: Incorrect account credentials or you are already logged in!");
+			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
