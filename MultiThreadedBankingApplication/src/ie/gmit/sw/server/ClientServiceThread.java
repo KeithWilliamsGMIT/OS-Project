@@ -13,37 +13,37 @@ import java.net.Socket;
 public class ClientServiceThread extends Thread {
 	private Socket clientSocket;
 	private String message;
-	private int clientID = -1;
+	private int clientId = -1;
 	private boolean running = true;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private UserManager userManager;
+	private User currentUser;
 	
 	// Constructors
-	public ClientServiceThread(Socket socket, int id, UserManager userManager) {
-		this.clientSocket = socket;
-		this.clientID = id;
+	public ClientServiceThread(Socket clientSocket, int clientId, UserManager userManager) {
+		this.clientSocket = clientSocket;
+		this.clientId = clientId;
 		this.userManager = userManager;
 	}
-
-	/**
-	 * The code within this run() method will be threaded. Each user will spawn a new thread when they connect to the server.
-	 */
+	
+	// Methods
+	// The code within this run() method will be threaded. Each user will spawn a new thread when they connect to the server.
 	public void run() {
-		System.out.println("Accepted Client : ID - " + clientID + " : Address - "
+		System.out.println("Accepted Client : ID - " + clientId + " : Address - "
 				+ clientSocket.getInetAddress().getHostName());
 		
 		try {
 			out = new ObjectOutputStream(clientSocket.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(clientSocket.getInputStream());
-			System.out.println("Accepted Client : ID - " + clientID + " : Address - "
+			System.out.println("Accepted Client : ID - " + clientId + " : Address - "
 					+ clientSocket.getInetAddress().getHostName());
 			
 			do {
 				try {
 					message = (String)in.readObject();
-					System.out.println("Client " + clientID + "> " + message);
+					System.out.println("Client " + clientId + "> " + message);
 					
 					// Determine what sequence to start
 					switch(message) {
@@ -53,6 +53,15 @@ public class ClientServiceThread extends Thread {
 					case "Login":
 						login();
 						break;
+					case "Details":
+						changeDetails();
+						break;
+					case "Logout":
+						logout();
+						break;
+					case "Exit":
+						running = false;
+						break;
 					}
 				}
 				catch(ClassNotFoundException classnot){
@@ -60,13 +69,15 @@ public class ClientServiceThread extends Thread {
 				}
 			} while(running);
 
-			System.out.println("Ending Client : ID - " + clientID + " : Address - "
+			System.out.println("Ending Client : ID - " + clientId + " : Address - "
 					+ clientSocket.getInetAddress().getHostName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	// Create a new user object with the variables supplied by the client.
+	// Register the user if the account number is unique
 	private void register() {
 		try {
 			String name, address, username, password;
@@ -110,6 +121,8 @@ public class ClientServiceThread extends Thread {
 		}
 	}
 	
+	// Ask for the users credentials. If they match the credentials of a registered user
+	// and that user is not already logged in, then login the user.
 	private void login() {
 		try {
 			String username, password;
@@ -130,7 +143,7 @@ public class ClientServiceThread extends Thread {
 			User user = new User("", "", accountNumber, username, password);
 			
 			// Check if the user logged in successfully
-			if (userManager.loginUser(user)) {
+			if ((currentUser = userManager.loginUser(user)) != null) {
 				// If the login is successful send a success message to the client
 				sendMessage("Successfully logged in!");
 			} else {
@@ -142,6 +155,41 @@ public class ClientServiceThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// Ask the user to re-enter all the details they entered when they registered except their account number.
+	private void changeDetails() {
+		try {
+			// Get name from client
+			sendMessage("Enter name (" + currentUser.getName() + ")");
+			message = (String)in.readObject();
+			currentUser.setName(message);
+			
+			// Get address from client
+			sendMessage("Enter address (" + currentUser.getAddress() + ")");
+			message = (String)in.readObject();
+			currentUser.setAddress(message);
+			
+			// Get username from client
+			sendMessage("Enter username (" + currentUser.getUsername() + ")");
+			message = (String)in.readObject();
+			currentUser.setUsername(message);
+			
+			// Get password from client
+			sendMessage("Enter password (" + currentUser.getPassword() + ")");
+			message = (String)in.readObject();
+			currentUser.setPassword(message);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Log the current user out.
+	private void logout() {
+		userManager.logoutUser(currentUser);
+		currentUser = null;
 	}
 	
 	private void sendMessage(String msg) {

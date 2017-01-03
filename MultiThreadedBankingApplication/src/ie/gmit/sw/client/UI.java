@@ -62,6 +62,7 @@ public class UI {
 			switch(option) {
 			case 1:
 				// Change Customer Details
+				client.changeDetails();
 				break;
 			case 2:
 				// Make Lodgement
@@ -74,5 +75,7 @@ public class UI {
 				break;
 			}
 		} while(option != 5);
+		
+		client.logout();
 	}
 }

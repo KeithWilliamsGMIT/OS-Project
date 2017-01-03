@@ -25,7 +25,8 @@ public class UserManager {
 		return registeredUsers.contains(userToCheck);
 	}
 	
-	public boolean loginUser(User userToLogin) {
+	public User loginUser(User userToLogin) {
+		User user = null;
 		boolean isSuccessful = false;
 		int registeredIndex = registeredUsers.indexOf(userToLogin);
 		int loggedInIndex = loggedInUsers.indexOf(userToLogin);
@@ -37,9 +38,14 @@ public class UserManager {
 		}
 		
 		if (isSuccessful) {
-			loggedInUsers.add(userToLogin);
+			user = registeredUsers.get(registeredIndex);
+			loggedInUsers.add(user);
 		}
 		
-		return isSuccessful;
+		return user;
+	}
+	
+	public void logoutUser(User userToLogout) {
+		loggedInUsers.remove(userToLogout);
 	}
 }

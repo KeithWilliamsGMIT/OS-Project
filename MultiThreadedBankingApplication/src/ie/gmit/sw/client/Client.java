@@ -44,6 +44,8 @@ public class Client{
 	// Close socket connection
 	public void close() {
 		try {
+			// Tell the server that the client is closing the connection so that the ClientServiceThread will finish
+			sendMessage("Exit");
 			in.close();
 			out.close();
 			requestSocket.close();
@@ -140,6 +142,47 @@ public class Client{
 		}
 		
 		return isSuccessful;
+	}
+	
+	// Sequence for changing all the current users details
+	public void changeDetails() {
+		try {
+			// Initialise request sequence
+			sendMessage("Details");
+			
+			// Enter name
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = stdin.next();
+			sendMessage(message);
+			
+			// Enter address
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = stdin.next();
+			sendMessage(message);
+			
+			// Enter username
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = stdin.next();
+			sendMessage(message);
+			
+			// Enter password
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = stdin.next();
+			sendMessage(message);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Tell the server that the client wants to logout
+	public void logout() {
+		sendMessage("Logout");
 	}
 	
 	// Send a message to the server
