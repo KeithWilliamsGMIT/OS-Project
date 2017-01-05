@@ -5,12 +5,13 @@
 
 package ie.gmit.sw.server;
 
-import java.util.Collection;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class Account {
 	private int number;
 	private float balance;
-	private Collection<Integer> transactions;
+	private Queue<Transaction> transactions = new LinkedList<Transaction>();
 	
 	// Constructors
 	public Account(int number) {
@@ -23,19 +24,41 @@ public class Account {
 		return number;
 	}
 
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
 	public float getBalance() {
 		return balance;
 	}
-
-	public void setBalance(float balance) {
-		this.balance = balance;
-	}
 	
 	// Methods
+	// Return the balance as a formatted string
+	public String getFormattedBalance() {
+		return String.format("%.2f", balance);
+	}
+	
+	// Increment the balance by the given amount
+	public void lodge(float amount) {
+		balance += amount;
+		Transaction transaction = new Transaction("Lodgement", amount);
+		addTransaction(transaction);
+	}
+	
+	// Decrease the balance by the given amount
+	public void withdraw(float amount) {
+		balance -= amount;
+		Transaction transaction = new Transaction("Withdrawal", amount);
+		addTransaction(transaction);
+	}
+	
+	// Add the given transaction to the queue of transactions
+	private void addTransaction(Transaction transaction) {
+		// If list has 10 elements remove the first element
+		if (transactions.size() == 10) {
+			transactions.poll();
+		}
+		
+		// Add the new transaction element to the end of the queue
+		transactions.offer(transaction);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

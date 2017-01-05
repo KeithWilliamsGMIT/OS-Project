@@ -34,12 +34,12 @@ Next, go to the bin directory as follows.
 cd OS-Project/MultiThreadedBankingApplication/bin
 ```
 
-Run the client in this terminal.
-```
-java ie.gmit.sw.client.Runner
-```
-
-Open a second terminal in the same directory and run the server.
+Run the server in this terminal.
 ```
 java ie.gmit.sw.server.Server
+```
+
+Open a second terminal in the same directory and run the client.
+```
+java ie.gmit.sw.client.Runner
 ```

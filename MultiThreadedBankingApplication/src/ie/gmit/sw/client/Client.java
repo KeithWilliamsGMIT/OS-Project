@@ -75,9 +75,9 @@ public class Client{
 			
 			// Enter account no.
 			message = (String)in.readObject();
-			System.out.println(message);
-			message = ((Integer)stdin.nextInt()).toString();
-			sendMessage(message);
+		    System.out.println(message);
+		    message = ((Integer)getPositiveInteger()).toString();
+		    sendMessage(message);
 			
 			// Enter username
 			message = (String)in.readObject();
@@ -113,7 +113,7 @@ public class Client{
 			// Enter account no.
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = ((Integer)stdin.nextInt()).toString();
+			message = ((Integer)getPositiveInteger()).toString();
 			sendMessage(message);
 			
 			// Enter username
@@ -132,7 +132,7 @@ public class Client{
 			message = (String)in.readObject();
 			System.out.println(message);
 			
-			if (message.equals("Successfully logged in!")) {
+			if (!isError(message)) {
 				isSuccessful = true;
 			}
 		} catch (ClassNotFoundException e) {
@@ -180,6 +180,50 @@ public class Client{
 		}
 	}
 	
+	// Sequence for lodging money into the users account
+	public void lodge() {
+		try {
+			// Initialise request sequence
+			sendMessage("Lodgement");
+			
+			// Enter amount
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = ((Float)getPositiveFloat()).toString();
+			sendMessage(message);
+			
+			// Print response
+			message = (String)in.readObject();
+			System.out.println(message);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Sequence for withdrawing money from the current users account
+	public void withdraw() {
+		try {
+			// Initialise request sequence
+			sendMessage("Withdrawal");
+			
+			// Enter amount
+			message = (String)in.readObject();
+			System.out.println(message);
+			message = ((Float)getPositiveFloat()).toString();
+			sendMessage(message);
+			
+			// Print response
+			message = (String)in.readObject();
+			System.out.println(message);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// Tell the server that the client wants to logout
 	public void logout() {
 		sendMessage("Logout");
@@ -194,5 +238,52 @@ public class Client{
 		catch(IOException ioException){
 			ioException.printStackTrace();
 		}
+	}
+	
+	// Continue to prompt the user for an input until they enter a positive integer and return it.
+	private int getPositiveInteger() {
+		int number;
+		
+		do {
+			while (!stdin.hasNextInt()) {
+				System.out.println("Please enter a positive whole number!");
+				stdin.next();
+			}
+			
+			number = stdin.nextInt();
+			
+			if (number < 0) {
+				System.out.println("Please enter a positive whole number!");
+			}
+		} while(number < 0);
+		
+		return number;
+	}
+	
+	// Continue to prompt the user for an input until they enter a positive float and return it.
+	private float getPositiveFloat() {
+		float number;
+		
+		do {
+			while (!stdin.hasNextFloat()) {
+				System.out.println("Please enter a positive number!");
+				stdin.next();
+			}
+			
+			number = stdin.nextFloat();
+			
+			if (number < 0) {
+				System.out.println("Please enter a positive number!");
+			}
+		} while(number < 0);
+		
+		return number;
+	}
+	
+	// Return true if the given message starts with "ERROR".
+	// Used to check if messages returned from the server are error messages.
+	private boolean isError(String msg) {
+		String firstFiveLetters = msg.substring(0, Math.min(msg.length(), 5));
+		return firstFiveLetters.equals("ERROR");
 	}
 }

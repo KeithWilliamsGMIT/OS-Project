@@ -66,9 +66,11 @@ public class UI {
 				break;
 			case 2:
 				// Make Lodgement
+				client.lodge();
 				break;
 			case 3:
 				// Make Withdrawal
+				client.withdraw();
 				break;
 			case 4:
 				// View Last 10 Transactions

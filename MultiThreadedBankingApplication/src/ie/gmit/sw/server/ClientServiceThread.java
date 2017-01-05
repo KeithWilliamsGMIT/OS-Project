@@ -56,6 +56,12 @@ public class ClientServiceThread extends Thread {
 					case "Details":
 						changeDetails();
 						break;
+					case "Lodgement":
+						lodgement();
+						break;
+					case "Withdrawal":
+						withdrawal();
+						break;
 					case "Logout":
 						logout();
 						break;
@@ -145,7 +151,7 @@ public class ClientServiceThread extends Thread {
 			// Check if the user logged in successfully
 			if ((currentUser = userManager.loginUser(user)) != null) {
 				// If the login is successful send a success message to the client
-				sendMessage("Successfully logged in!");
+				sendMessage("Current balance: €" + currentUser.getAccount().getFormattedBalance());
 			} else {
 				// If the login is unsuccessful send an error message to the client
 				sendMessage("ERROR: Incorrect account credentials or you are already logged in!");
@@ -186,12 +192,56 @@ public class ClientServiceThread extends Thread {
 		}
 	}
 	
+	// Ask the user to enter the amount they would like to lodge into their account
+	private void lodgement() {
+		try {
+			float amount;
+			
+			// Get amount to lodge from client
+			sendMessage("Enter the amount you would like to lodge into your account");
+			amount = Float.parseFloat((String) in.readObject());
+			
+			currentUser.getAccount().lodge(amount);
+			sendMessage("New balance is €" + currentUser.getAccount().getFormattedBalance());
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Ask the user to enter the amount they would like to withdraw from their account
+	private void withdrawal() {
+		try {
+			float amount;
+			
+			// Get amount to withdraw from client
+			sendMessage("Enter the amount you would like to withdraw from your account");
+			amount = Float.parseFloat((String) in.readObject());
+			
+			// Check if the amount exceeds either the credit limit or the users credit balance
+			if (amount > 1000) {
+				sendMessage("ERROR: The amount you entered exceeded the credit limit of €1000.00");
+			} else if (currentUser.getAccount().getBalance() < amount) {
+				sendMessage("ERROR: The amount you entered exceeded your current balance of €" + currentUser.getAccount().getFormattedBalance());
+			} else {
+				currentUser.getAccount().withdraw(amount);
+				sendMessage("New balance is €" + currentUser.getAccount().getFormattedBalance());
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	// Log the current user out.
 	private void logout() {
 		userManager.logoutUser(currentUser);
 		currentUser = null;
 	}
 	
+	// Send the given message to the client.
 	private void sendMessage(String msg) {
 		try{
 			out.writeObject(msg);
