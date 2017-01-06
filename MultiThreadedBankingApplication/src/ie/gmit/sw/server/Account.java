@@ -5,8 +5,7 @@
 
 package ie.gmit.sw.server;
 
-import java.util.Queue;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Account {
 	private int number;
@@ -57,6 +56,18 @@ public class Account {
 		
 		// Add the new transaction element to the end of the queue
 		transactions.offer(transaction);
+	}
+	
+	// Return all transactions as a string
+	public String getTransactions() {
+		List<Transaction> transactionsList = new ArrayList<Transaction>(transactions);
+		String transactionsString = "Last " + transactionsList.size() + " transactions";
+		
+		for (int i = 0; i < transactionsList.size(); ++i) {
+			transactionsString += "\n" + (i + 1) + ") " + transactionsList.get(i).toString();
+		}
+		
+		return transactionsString;
 	}
 	
 	@Override

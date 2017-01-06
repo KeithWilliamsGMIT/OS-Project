@@ -62,6 +62,9 @@ public class ClientServiceThread extends Thread {
 					case "Withdrawal":
 						withdrawal();
 						break;
+					case "Transactions":
+						transactions();
+						break;
 					case "Logout":
 						logout();
 						break;
@@ -233,6 +236,12 @@ public class ClientServiceThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// Send the client a list of previous transactions
+	private void transactions() {
+		// Send transaction information to client
+		sendMessage(currentUser.getAccount().getTransactions());
 	}
 	
 	// Log the current user out.

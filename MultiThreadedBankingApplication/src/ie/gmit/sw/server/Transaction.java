@@ -22,7 +22,6 @@ public class Transaction {
 	// Methods
 	@Override
 	public String toString() {
-		return "Transaction [date=" + date + ", type=" + type + ", amount="
-				+ amount + "]";
+		return String.format("%s\t%s\t€%.2f", date.toString(), type, amount);
 	}
 }

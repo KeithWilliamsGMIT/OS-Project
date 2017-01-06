@@ -54,7 +54,7 @@ public class UI {
 				System.out.println("1) Change Customer Details");
 				System.out.println("2) Make Lodgement");
 				System.out.println("3) Make Withdrawal");
-				System.out.println("4) View Last 10 Transactions");
+				System.out.println("4) View Previous Transactions");
 				System.out.println("5) Logout");
 				option = sc.nextInt();
 			} while(option < 1 || option > 5);
@@ -74,6 +74,7 @@ public class UI {
 				break;
 			case 4:
 				// View Last 10 Transactions
+				client.transactions();
 				break;
 			}
 		} while(option != 5);

@@ -61,16 +61,18 @@ public class Client{
 			// Initialise request sequence
 			sendMessage("Register");
 			
+			stdin.nextLine();
+			
 			// Enter name
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.next();
+			message = stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter address
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.next();
+			message = stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter account no.
@@ -150,16 +152,18 @@ public class Client{
 			// Initialise request sequence
 			sendMessage("Details");
 			
+			stdin.nextLine();
+			
 			// Enter name
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.next();
+			message = stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter address
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.next();
+			message = stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter username
@@ -215,6 +219,22 @@ public class Client{
 			sendMessage(message);
 			
 			// Print response
+			message = (String)in.readObject();
+			System.out.println(message);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Sequence for withdrawing money from the current users account
+	public void transactions() {
+		try {
+			// Initialise request sequence
+			sendMessage("Transactions");
+			
+			// Print transaction information
 			message = (String)in.readObject();
 			System.out.println(message);
 		} catch (ClassNotFoundException e) {
