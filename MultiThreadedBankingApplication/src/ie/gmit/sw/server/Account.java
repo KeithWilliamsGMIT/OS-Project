@@ -5,9 +5,10 @@
 
 package ie.gmit.sw.server;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Account {
+public class Account implements Serializable {
 	private int number;
 	private float balance;
 	private Queue<Transaction> transactions = new LinkedList<Transaction>();

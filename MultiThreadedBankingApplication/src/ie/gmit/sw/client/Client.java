@@ -10,34 +10,34 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Client{
+	private final String IP_ADDRESS = "35.163.94.108";
 	private Socket requestSocket;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String message = "";
 	private Scanner stdin;
 	
+	// Constructors
+	public Client() {
+		stdin = new Scanner(System.in);
+	}
+	
 	// Open socket connection
 	public void open() {
-		String ipaddress;
-		stdin = new Scanner(System.in);
-
 		try {
 			// Create a socket to connect to the server
-			System.out.println("Please Enter your IP Address");
-			ipaddress = stdin.next();
-			requestSocket = new Socket(ipaddress, 2004);
-			System.out.println("Connected to " + ipaddress + " in port 2004");
+			requestSocket = new Socket(IP_ADDRESS, 2004);
 			
 			// Get Input and Output streams
 			out = new ObjectOutputStream(requestSocket.getOutputStream());
 			out.flush();
 			in = new ObjectInputStream(requestSocket.getInputStream());
 		}
-		catch(UnknownHostException unknownHost) {
-			System.err.println("You are trying to connect to an unknown host!");
+		catch(UnknownHostException e) {
+			System.out.println("ERROR: " + e.getMessage());
 		}
-		catch(IOException ioException) {
-			ioException.printStackTrace();
+		catch(IOException e) {
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -50,8 +50,8 @@ public class Client{
 			out.close();
 			requestSocket.close();
 		}
-		catch(IOException ioException){
-			ioException.printStackTrace();
+		catch(IOException e){
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -61,18 +61,20 @@ public class Client{
 			// Initialise request sequence
 			sendMessage("Register");
 			
-			stdin.nextLine();
-			
 			// Enter name
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.nextLine();
+			do {
+				message = stdin.nextLine();
+			} while(message.isEmpty());
 			sendMessage(message);
 			
 			// Enter address
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.nextLine();
+			do {
+				message = stdin.nextLine();
+			} while(message.isEmpty());
 			sendMessage(message);
 			
 			// Enter account no.
@@ -85,21 +87,23 @@ public class Client{
 			message = (String)in.readObject();
 			System.out.println(message);
 			message = stdin.next();
+			stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter password
 			message = (String)in.readObject();
 			System.out.println(message);
 			message = stdin.next();
+			stdin.nextLine();
 			sendMessage(message);
 			
 			// Print response from server
 			message = (String)in.readObject();
 			System.out.println(message);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -122,12 +126,14 @@ public class Client{
 			message = (String)in.readObject();
 			System.out.println(message);
 			message = stdin.next();
+			stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter password
 			message = (String)in.readObject();
 			System.out.println(message);
 			message = stdin.next();
+			stdin.nextLine();
 			sendMessage(message);
 			
 			// Print response from server
@@ -138,9 +144,9 @@ public class Client{
 				isSuccessful = true;
 			}
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		}
 		
 		return isSuccessful;
@@ -152,35 +158,39 @@ public class Client{
 			// Initialise request sequence
 			sendMessage("Details");
 			
-			stdin.nextLine();
-			
 			// Enter name
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.nextLine();
+			do {
+				message = stdin.nextLine();
+			} while(message.isEmpty());
 			sendMessage(message);
 			
 			// Enter address
 			message = (String)in.readObject();
 			System.out.println(message);
-			message = stdin.nextLine();
+			do {
+				message = stdin.nextLine();
+			} while(message.isEmpty());
 			sendMessage(message);
 			
 			// Enter username
 			message = (String)in.readObject();
 			System.out.println(message);
 			message = stdin.next();
+			stdin.nextLine();
 			sendMessage(message);
 			
 			// Enter password
 			message = (String)in.readObject();
 			System.out.println(message);
 			message = stdin.next();
+			stdin.nextLine();
 			sendMessage(message);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -200,9 +210,9 @@ public class Client{
 			message = (String)in.readObject();
 			System.out.println(message);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -222,9 +232,9 @@ public class Client{
 			message = (String)in.readObject();
 			System.out.println(message);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -238,9 +248,9 @@ public class Client{
 			message = (String)in.readObject();
 			System.out.println(message);
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -255,8 +265,8 @@ public class Client{
 			out.writeObject(msg);
 			out.flush();
 		}
-		catch(IOException ioException){
-			ioException.printStackTrace();
+		catch(IOException e){
+			System.out.println("ERROR: " + e.getMessage());
 		}
 	}
 	
@@ -277,6 +287,8 @@ public class Client{
 			}
 		} while(number < 0);
 		
+		stdin.nextLine();
+		
 		return number;
 	}
 	
@@ -296,6 +308,8 @@ public class Client{
 				System.out.println("Please enter a positive number!");
 			}
 		} while(number < 0);
+		
+		stdin.nextLine();
 		
 		return number;
 	}

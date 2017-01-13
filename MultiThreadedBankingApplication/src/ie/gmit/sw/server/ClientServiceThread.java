@@ -19,16 +19,19 @@ public class ClientServiceThread extends Thread {
 	private ObjectInputStream in;
 	private UserManager userManager;
 	private User currentUser;
+	private UserIO io;
 	
 	// Constructors
 	public ClientServiceThread(Socket clientSocket, int clientId, UserManager userManager) {
 		this.clientSocket = clientSocket;
 		this.clientId = clientId;
 		this.userManager = userManager;
+		this.io = new UserIO();
 	}
 	
 	// Methods
-	// The code within this run() method will be threaded. Each user will spawn a new thread when they connect to the server.
+	// The code within this run() method will be threaded.
+	// Each user will spawn a new thread when they connect to the server.
 	public void run() {
 		System.out.println("Accepted Client : ID - " + clientId + " : Address - "
 				+ clientSocket.getInetAddress().getHostName());
@@ -81,7 +84,7 @@ public class ClientServiceThread extends Thread {
 			System.out.println("Ending Client : ID - " + clientId + " : Address - "
 					+ clientSocket.getInetAddress().getHostName());
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("ERROR Client : ID - " + clientId + " : " + e.getMessage());
 		}
 	}
 	
@@ -121,6 +124,10 @@ public class ClientServiceThread extends Thread {
 			} else {
 				// If the user is not registered, register the new user and send a success message to the client
 				userManager.registerUser(user);
+				
+				// Save user
+				io.saveUser(user);
+				
 				sendMessage("Successfully registered!");
 			}
 		} catch (ClassNotFoundException e) {
@@ -151,14 +158,20 @@ public class ClientServiceThread extends Thread {
 			
 			User user = new User("", "", accountNumber, username, password);
 			
-			// Check if the user logged in successfully
-			if ((currentUser = userManager.loginUser(user)) != null) {
-				// If the login is successful send a success message to the client
+			// Try to login
+			try {
+				// If the user logged in successfully send them their current balance
+				currentUser = userManager.loginUser(user);
+				
+				// Save user
+				io.saveUser(currentUser);
+				
 				sendMessage("Current balance: €" + currentUser.getAccount().getFormattedBalance());
-			} else {
-				// If the login is unsuccessful send an error message to the client
-				sendMessage("ERROR: Incorrect account credentials or you are already logged in!");
+			} catch(Exception e) {
+				// If an error occurred send the user the error message
+				sendMessage("ERROR: " + e.getMessage());
 			}
+			
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -188,6 +201,9 @@ public class ClientServiceThread extends Thread {
 			sendMessage("Enter password (" + currentUser.getPassword() + ")");
 			message = (String)in.readObject();
 			currentUser.setPassword(message);
+			
+			// Save user
+			io.saveUser(currentUser);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -205,6 +221,10 @@ public class ClientServiceThread extends Thread {
 			amount = Float.parseFloat((String) in.readObject());
 			
 			currentUser.getAccount().lodge(amount);
+			
+			// Save user
+			io.saveUser(currentUser);
+			
 			sendMessage("New balance is €" + currentUser.getAccount().getFormattedBalance());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -229,6 +249,10 @@ public class ClientServiceThread extends Thread {
 				sendMessage("ERROR: The amount you entered exceeded your current balance of €" + currentUser.getAccount().getFormattedBalance());
 			} else {
 				currentUser.getAccount().withdraw(amount);
+				
+				// Save user
+				io.saveUser(currentUser);
+				
 				sendMessage("New balance is €" + currentUser.getAccount().getFormattedBalance());
 			}
 		} catch (ClassNotFoundException e) {
